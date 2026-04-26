@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { money } from "@/lib/format";
 import { useAuth } from "@/store/auth";
-import type { ContactMessage, Order, Product, Review, User } from "@/types";
+import type { ContactMessage, ContactReply, Order, Product, Review, User } from "@/types";
 
 type Stats = { dailySales: number; dailyOrders: number; totalOrders: number; totalUsers: number; topProducts: Product[] };
 type Tab = "orders" | "users" | "reviews" | "messages";
@@ -17,6 +17,9 @@ export default function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
+  const [replyOpen, setReplyOpen] = useState<Record<string, boolean>>({});
+  const [replySending, setReplySending] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (!token || user?.role !== "admin") return;
@@ -51,6 +54,28 @@ export default function AdminPage() {
     if (!token || !confirm("Delete this review?")) return;
     await api.adminDeleteReview(token, id);
     setReviews((cur) => cur.filter((r) => r.id !== id));
+  }
+
+  async function sendReply(id: string) {
+    const content = (replyDrafts[id] ?? "").trim();
+    if (!token || !content) return;
+    setReplySending((cur) => ({ ...cur, [id]: true }));
+    try {
+      const { reply } = await api.adminReplyToMessage(token, id, content);
+      setMessages((cur) =>
+        cur.map((m) =>
+          m.id === id
+            ? { ...m, isRead: true, replies: [...(m.replies ?? []), reply] }
+            : m
+        )
+      );
+      setReplyDrafts((cur) => ({ ...cur, [id]: "" }));
+      setReplyOpen((cur) => ({ ...cur, [id]: false }));
+    } catch {
+      alert("Failed to send reply.");
+    } finally {
+      setReplySending((cur) => ({ ...cur, [id]: false }));
+    }
   }
 
   async function markRead(id: string) {
@@ -280,10 +305,11 @@ export default function AdminPage() {
       {tab === "messages" && (
         <div className="mt-4 rounded-lg bg-white p-5">
           <h2 className="font-display text-2xl font-bold mb-4">Contact Messages</h2>
-          <div className="grid gap-3">
+          <div className="grid gap-4">
             {messages.map((msg) => (
-              <div key={msg.id} className={`rounded-lg border p-4 ${msg.isRead ? "border-cocoa/10 bg-white" : "border-blue-200 bg-blue-50/40"}`}>
-                <div className="flex flex-wrap items-start justify-between gap-3">
+              <div key={msg.id} className={`rounded-xl border ${msg.isRead ? "border-cocoa/10" : "border-blue-200 bg-blue-50/30"}`}>
+                {/* Message header */}
+                <div className="flex flex-wrap items-start justify-between gap-3 p-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       {!msg.isRead && <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0" />}
@@ -294,10 +320,16 @@ export default function AdminPage() {
                     <p className="mt-2 text-sm text-cocoa/80 whitespace-pre-wrap">{msg.message}</p>
                   </div>
                   <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => setReplyOpen((cur) => ({ ...cur, [msg.id]: !cur[msg.id] }))}
+                      className="rounded-md bg-cocoa px-3 py-1 text-xs font-semibold text-white hover:bg-cocoa/90"
+                    >
+                      {replyOpen[msg.id] ? "Cancel" : "Reply"}
+                    </button>
                     {!msg.isRead && (
                       <button
                         onClick={() => markRead(msg.id)}
-                        className="rounded-md bg-blue-600 px-3 py-1 text-xs font-semibold text-white hover:bg-blue-700"
+                        className="rounded-md border border-cocoa/20 px-3 py-1 text-xs font-semibold text-cocoa/70 hover:bg-cream"
                       >
                         Mark Read
                       </button>
@@ -310,6 +342,53 @@ export default function AdminPage() {
                     </button>
                   </div>
                 </div>
+
+                {/* Previous replies thread */}
+                {(msg.replies ?? []).length > 0 && (
+                  <div className="border-t border-cocoa/10 bg-cream/50 px-4 py-3 grid gap-2">
+                    {(msg.replies as ContactReply[]).map((reply) => (
+                      <div key={reply.id} className="ml-4 rounded-lg bg-white border border-cocoa/10 p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-semibold text-berry">The Cake Gallery</span>
+                          <span className="text-xs text-cocoa/40">{new Date(reply.sentAt).toLocaleString()}</span>
+                        </div>
+                        <p className="text-sm text-cocoa/80 whitespace-pre-wrap">{reply.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Reply compose box */}
+                {replyOpen[msg.id] && (
+                  <div className="border-t border-cocoa/10 p-4 bg-cream/30">
+                    <p className="text-xs font-semibold text-cocoa/50 mb-2">
+                      Replying to {msg.name} &lt;{msg.email}&gt;
+                      {" · "}reply will also be sent as an email
+                    </p>
+                    <textarea
+                      className="w-full rounded-lg border border-cocoa/15 bg-white p-3 text-sm focus:outline-none focus:ring-2 focus:ring-berry/40"
+                      rows={4}
+                      placeholder={`Hi ${msg.name},\n\nThank you for reaching out…`}
+                      value={replyDrafts[msg.id] ?? ""}
+                      onChange={(e) => setReplyDrafts((cur) => ({ ...cur, [msg.id]: e.target.value }))}
+                    />
+                    <div className="mt-2 flex justify-end gap-2">
+                      <button
+                        onClick={() => setReplyOpen((cur) => ({ ...cur, [msg.id]: false }))}
+                        className="rounded-md border border-cocoa/20 px-4 py-1.5 text-sm font-semibold hover:bg-cream"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => sendReply(msg.id)}
+                        disabled={replySending[msg.id] || !(replyDrafts[msg.id] ?? "").trim()}
+                        className="rounded-md bg-berry px-4 py-1.5 text-sm font-semibold text-white hover:bg-berry/90 disabled:opacity-50"
+                      >
+                        {replySending[msg.id] ? "Sending…" : "Send Reply"}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
             {!messages.length && <p className="py-6 text-center text-cocoa/40">No messages yet.</p>}

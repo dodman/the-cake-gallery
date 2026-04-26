@@ -132,10 +132,20 @@ model Review {
 }
 
 model ContactMessage {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
   name      String
   email     String
   message   String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  isRead    Boolean        @default(false)
+  createdAt DateTime       @default(now())
+
+  replies   ContactReply[]
+}
+
+model ContactReply {
+  id        String         @id @default(cuid())
+  messageId String
+  message   ContactMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  content   String
+  sentAt    DateTime       @default(now())
 }

@@ -1,4 +1,4 @@
-import type { Category, ContactMessage, Order, Product, Review, User } from "@/types";
+import type { Category, ContactMessage, ContactReply, Order, Product, Review, User } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
 
@@ -58,6 +58,8 @@ export const api = {
   sendMessage: (body: { name: string; email: string; message: string }) =>
     request<{ message: ContactMessage }>("/contact", { method: "POST", body: JSON.stringify(body) }),
   adminMessages: (token: string) => request<{ messages: ContactMessage[] }>("/contact", { token }),
+  adminReplyToMessage: (token: string, id: string, content: string) =>
+    request<{ reply: ContactReply }>(`/contact/${id}/reply`, { method: "POST", token, body: JSON.stringify({ content }) }),
   adminMarkMessageRead: (token: string, id: string) =>
     request<{ message: ContactMessage }>(`/contact/${id}/read`, { method: "PATCH", token }),
   adminDeleteMessage: (token: string, id: string) =>

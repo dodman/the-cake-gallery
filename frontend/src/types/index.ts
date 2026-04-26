@@ -67,6 +67,13 @@ export type Review = {
   product?: { name: string };
 };
 
+export type ContactReply = {
+  id: string;
+  messageId: string;
+  content: string;
+  sentAt: string;
+};
+
 export type ContactMessage = {
   id: string;
   name: string;
@@ -74,4 +81,5 @@ export type ContactMessage = {
   message: string;
   isRead: boolean;
   createdAt: string;
+  replies: ContactReply[];
 };
