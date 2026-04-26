@@ -33,7 +33,7 @@ export default function CheckoutPage() {
     }
     try {
       const result = await api.createOrder(token, {
-        items: items.map((item) => ({ product: item._id, quantity: item.quantity })),
+        items: items.map((item) => ({ product: item.id, quantity: item.quantity })),
         paymentMethod,
         fulfillment,
         deliveryArea,
@@ -88,7 +88,7 @@ export default function CheckoutPage() {
         <aside className="h-fit rounded-lg bg-white p-5 shadow-sm">
           <h2 className="font-display text-2xl font-bold">Order Summary</h2>
           <div className="mt-4 grid gap-2 text-sm">
-            {items.map((item) => <div key={item._id} className="flex justify-between"><span>{item.quantity} x {item.name}</span><span>{money(item.price * item.quantity)}</span></div>)}
+            {items.map((item) => <div key={item.id} className="flex justify-between"><span>{item.quantity} x {item.name}</span><span>{money(item.price * item.quantity)}</span></div>)}
           </div>
           <div className="mt-5 border-t border-cocoa/10 pt-4">
             <div className="flex justify-between"><span>Subtotal</span><span>{money(subtotal)}</span></div>

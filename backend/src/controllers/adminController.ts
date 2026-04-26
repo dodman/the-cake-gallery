@@ -1,28 +1,30 @@
-import { Order } from "../models/Order.js";
-import { Product } from "../models/Product.js";
-import { User } from "../models/User.js";
+import { prisma } from "../lib/prisma.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const dashboardStats = asyncHandler(async (_req, res) => {
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  const [dailySales, totalOrders, totalUsers, topProducts] = await Promise.all([
-    Order.aggregate([
-      { $match: { createdAt: { $gte: startOfDay } } },
-      { $group: { _id: null, revenue: { $sum: "$total" }, orders: { $sum: 1 } } }
-    ]),
-    Order.countDocuments(),
-    User.countDocuments({ role: "customer" }),
-    Product.find().sort({ soldCount: -1 }).limit(5).select("name image soldCount price")
+  const [dailyAgg, totalOrders, totalUsers, topProducts] = await Promise.all([
+    prisma.order.aggregate({
+      where: { createdAt: { gte: today } },
+      _sum: { total: true },
+      _count: { id: true }
+    }),
+    prisma.order.count(),
+    prisma.user.count({ where: { role: "customer" } }),
+    prisma.product.findMany({
+      orderBy: { soldCount: "desc" },
+      take: 5,
+      select: { id: true, name: true, image: true, soldCount: true, price: true }
+    })
   ]);
 
   res.json({
-    dailySales: dailySales[0]?.revenue ?? 0,
-    dailyOrders: dailySales[0]?.orders ?? 0,
+    dailySales: dailyAgg._sum.total ?? 0,
+    dailyOrders: dailyAgg._count.id ?? 0,
     totalOrders,
     totalUsers,
     topProducts
   });
 });
-

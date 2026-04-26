@@ -39,7 +39,7 @@ export default function DashboardPage() {
           <h2 className="font-display text-2xl font-bold">Previous Orders</h2>
           <div className="mt-4 grid gap-3">
             {orders.map((order) => (
-              <div key={order._id} className="flex flex-wrap items-center justify-between gap-3 rounded-md bg-cream p-4">
+              <div key={order.id} className="flex flex-wrap items-center justify-between gap-3 rounded-md bg-cream p-4">
                 <div>
                   <strong>{order.trackingCode}</strong>
                   <p className="text-sm text-cocoa/60">{order.status} - {order.items.length} items</p>

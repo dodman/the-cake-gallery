@@ -56,7 +56,7 @@ export default async function HomePage() {
           <LinkButton href="/menu" variant="ghost" className="hidden md:inline-flex">View Menu</LinkButton>
         </div>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.slice(0, 6).map((product) => <ProductCard key={product._id} product={product} />)}
+          {products.slice(0, 6).map((product) => <ProductCard key={product.id} product={product} />)}
         </div>
       </section>
 
@@ -68,7 +68,7 @@ export default async function HomePage() {
             <p className="mt-4 text-cocoa/65">Daily specials rotate based on fresh ingredients and kitchen availability.</p>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
-            {specials.map((product) => <ProductCard key={product._id} product={product} />)}
+            {specials.map((product) => <ProductCard key={product.id} product={product} />)}
           </div>
         </div>
       </section>
@@ -77,7 +77,7 @@ export default async function HomePage() {
         <h2 className="font-display text-4xl font-bold">Shop by Category</h2>
         <div className="mt-8 grid gap-5 md:grid-cols-4">
           {categories.map((category) => (
-            <a key={category._id} href={`/menu?category=${category.slug}`} className="group relative aspect-[4/5] overflow-hidden rounded-lg">
+            <a key={category.id} href={`/menu?category=${category.slug}`} className="group relative aspect-[4/5] overflow-hidden rounded-lg">
               <Image src={category.image ?? fallbackCategories[0].image!} alt={category.name} fill className="object-cover transition group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-cocoa/80 to-transparent" />
               <div className="absolute bottom-0 p-5 text-white">

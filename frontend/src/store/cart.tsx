@@ -22,18 +22,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     items,
     addItem(product, quantity = 1) {
       setItems((current) => {
-        const existing = current.find((item) => item._id === product._id);
+        const existing = current.find((item) => item.id === product.id);
         if (existing) {
-          return current.map((item) => (item._id === product._id ? { ...item, quantity: item.quantity + quantity } : item));
+          return current.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item));
         }
         return [...current, { ...product, quantity }];
       });
     },
     updateQuantity(id, quantity) {
-      setItems((current) => current.map((item) => (item._id === id ? { ...item, quantity } : item)).filter((item) => item.quantity > 0));
+      setItems((current) => current.map((item) => (item.id === id ? { ...item, quantity } : item)).filter((item) => item.quantity > 0));
     },
     removeItem(id) {
-      setItems((current) => current.filter((item) => item._id !== id));
+      setItems((current) => current.filter((item) => item.id !== id));
     },
     clear() {
       setItems([]);
@@ -50,4 +50,3 @@ export function useCart() {
   if (!ctx) throw new Error("useCart must be used inside CartProvider");
   return ctx;
 }
-

@@ -1,5 +1,5 @@
 export type Category = {
-  _id: string;
+  id: string;
   name: string;
   slug: string;
   description?: string;
@@ -7,7 +7,7 @@ export type Category = {
 };
 
 export type Product = {
-  _id: string;
+  id: string;
   name: string;
   slug: string;
   description: string;
@@ -27,8 +27,7 @@ export type Product = {
 };
 
 export type User = {
-  id?: string;
-  _id?: string;
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -40,7 +39,7 @@ export type User = {
 export type CartItem = Product & { quantity: number };
 
 export type Order = {
-  _id: string;
+  id: string;
   trackingCode: string;
   status: "Pending" | "Preparing" | "Out for Delivery" | "Delivered";
   paymentMethod: "Airtel Money" | "MTN MoMo" | "Cash on Delivery";
@@ -52,7 +51,6 @@ export type Order = {
   subtotal: number;
   discount: number;
   total: number;
-  items: Array<{ product: string; name: string; price: number; quantity: number; image: string }>;
+  items: Array<{ productId: string; name: string; price: number; quantity: number; image: string }>;
   createdAt: string;
 };
-

@@ -1,9 +1,6 @@
-import mongoose from "mongoose";
-import { env } from "./env.js";
+import { prisma } from "../lib/prisma.js";
 
 export async function connectDb() {
-  mongoose.set("strictQuery", true);
-  await mongoose.connect(env.mongoUri);
-  console.log("MongoDB connected");
+  await prisma.$connect();
+  console.log("Database connected");
 }
-

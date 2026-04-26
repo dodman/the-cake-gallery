@@ -24,7 +24,7 @@ export default function AdminPage() {
   async function updateStatus(id: string, status: string) {
     if (!token) return;
     const result = await api.updateOrderStatus(token, id, status);
-    setOrders((current) => current.map((order) => (order._id === id ? result.order : order)));
+    setOrders((current) => current.map((order) => (order.id === id ? result.order : order)));
   }
 
   if (!token || user?.role !== "admin") {
@@ -48,13 +48,13 @@ export default function AdminPage() {
               <thead><tr className="border-b"><th className="py-2">Code</th><th>Total</th><th>Status</th><th>Payment</th><th>Action</th></tr></thead>
               <tbody>
                 {orders.map((order) => (
-                  <tr key={order._id} className="border-b border-cocoa/10">
+                  <tr key={order.id} className="border-b border-cocoa/10">
                     <td className="py-3 font-semibold">{order.trackingCode}</td>
                     <td>{money(order.total)}</td>
                     <td>{order.status}</td>
                     <td>{order.paymentMethod}</td>
                     <td>
-                      <select className="rounded-md border border-cocoa/15 p-2" value={order.status} onChange={(event) => updateStatus(order._id, event.target.value)}>
+                      <select className="rounded-md border border-cocoa/15 p-2" value={order.status} onChange={(event) => updateStatus(order.id, event.target.value)}>
                         {["Pending", "Preparing", "Out for Delivery", "Delivered"].map((status) => <option key={status}>{status}</option>)}
                       </select>
                     </td>
@@ -68,7 +68,7 @@ export default function AdminPage() {
           <div className="rounded-lg bg-white p-5">
             <h2 className="font-display text-2xl font-bold">Top Sellers</h2>
             <div className="mt-3 grid gap-2">
-              {stats?.topProducts?.map((product) => <div key={product._id} className="flex justify-between text-sm"><span>{product.name}</span><strong>{product.soldCount}</strong></div>)}
+              {stats?.topProducts?.map((product) => <div key={product.id} className="flex justify-between text-sm"><span>{product.name}</span><strong>{product.soldCount}</strong></div>)}
             </div>
           </div>
           <div className="rounded-lg bg-white p-5">

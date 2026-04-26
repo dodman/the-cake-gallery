@@ -1,5 +1,6 @@
+import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { User } from "../models/User.js";
+import { prisma } from "../lib/prisma.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/errors.js";
 import { signToken } from "../utils/token.js";
@@ -17,41 +18,39 @@ export const loginSchema = z.object({
   password: z.string().min(8)
 });
 
-function authResponse(user: { _id: unknown; name: string; email: string; phone: string; role: "customer" | "admin"; address?: string }) {
-  const id = String(user._id);
-  const token = signToken({ id, role: user.role });
+function authResponse(user: { id: string; name: string; email: string; phone: string; role: string; address?: string | null }) {
+  const token = signToken({ id: user.id, role: user.role as "customer" | "admin" });
   return {
     token,
-    user: {
-      id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      address: user.address
-    }
+    user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role, address: user.address }
   };
 }
 
 export const register = asyncHandler(async (req, res) => {
-  const existing = await User.findOne({ email: req.body.email });
+  const existing = await prisma.user.findUnique({ where: { email: req.body.email.toLowerCase().trim() } });
   if (existing) throw new ApiError(409, "Email is already registered");
 
-  const user = await User.create({ ...req.body, role: "customer" });
+  const password = await bcrypt.hash(req.body.password, 12);
+  const user = await prisma.user.create({
+    data: { name: req.body.name, email: req.body.email.toLowerCase().trim(), phone: req.body.phone, password, address: req.body.address, role: "customer" }
+  });
   res.status(201).json(authResponse(user));
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const user = await User.findOne({ email: req.body.email }).select("+password");
-  if (!user || !(await user.comparePassword(req.body.password))) {
+  const user = await prisma.user.findUnique({ where: { email: req.body.email.toLowerCase().trim() } });
+  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
     throw new ApiError(401, "Invalid email or password");
   }
-
   res.json(authResponse(user));
 });
 
 export const me = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user?.id).populate("favorites");
+  const user = await prisma.user.findUnique({
+    where: { id: req.user?.id },
+    include: { favorites: { include: { product: true } } }
+  });
   if (!user) throw new ApiError(404, "User not found");
-  res.json({ user });
+  const { password: _pw, ...safe } = user;
+  res.json({ user: { ...safe, favorites: user.favorites.map((f) => f.product) } });
 });
