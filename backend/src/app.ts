@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { adminRoutes } from "./routes/adminRoutes.js";
 import { authRoutes } from "./routes/authRoutes.js";
 import { categoryRoutes } from "./routes/categoryRoutes.js";
+import { contactRoutes } from "./routes/contactRoutes.js";
 import { couponRoutes } from "./routes/couponRoutes.js";
 import { orderRoutes } from "./routes/orderRoutes.js";
 import { productRoutes } from "./routes/productRoutes.js";
@@ -30,6 +31,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/coupons", couponRoutes);
+app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.use(notFound);

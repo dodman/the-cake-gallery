@@ -51,6 +51,27 @@ export type Order = {
   subtotal: number;
   discount: number;
   total: number;
-  items: Array<{ productId: string; name: string; price: number; quantity: number; image: string }>;
+  items: Array<{ id: string; productId: string; name: string; price: number; quantity: number; image: string }>;
+  createdAt: string;
+};
+
+export type Review = {
+  id: string;
+  userId: string;
+  productId: string;
+  rating: number;
+  comment: string;
+  isApproved: boolean;
+  createdAt: string;
+  user?: { name: string; email?: string };
+  product?: { name: string };
+};
+
+export type ContactMessage = {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  isRead: boolean;
   createdAt: string;
 };

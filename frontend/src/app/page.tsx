@@ -7,10 +7,12 @@ import { LinkButton } from "@/components/Button";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 
 export default async function HomePage() {
-  const [{ products }, { categories }] = await Promise.all([
+  const [{ products }, { categories }, reviewsResult] = await Promise.all([
     api.getProducts("?featured=true").catch(() => ({ products: fallbackProducts })),
-    api.getCategories().catch(() => ({ categories: fallbackCategories }))
+    api.getCategories().catch(() => ({ categories: fallbackCategories })),
+    api.getApprovedReviews().catch(() => ({ reviews: [] }))
   ]);
+  const reviews = reviewsResult.reviews;
   const specials = products.filter((product) => product.isTodaySpecial).concat(fallbackProducts.filter((product) => product.isTodaySpecial)).slice(0, 3);
 
   const highlights: Array<{ icon: LucideIcon; label: string }> = [
@@ -89,16 +91,28 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-cocoa py-14 text-cream">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 md:grid-cols-3">
-          {["The birthday cake was stunning and tasted rich.", "Lunch delivery arrived hot and well packed.", "Best muffins for our office meetings."].map((quote, index) => (
-            <blockquote key={quote} className="rounded-lg bg-white/10 p-6">
-              <p className="text-lg">&quot;{quote}&quot;</p>
-              <footer className="mt-4 text-sm text-cream/70">Customer {index + 1}</footer>
-            </blockquote>
-          ))}
-        </div>
-      </section>
+      {reviews.length > 0 && (
+        <section className="bg-cocoa py-14 text-cream">
+          <div className="mx-auto max-w-7xl px-4">
+            <h2 className="font-display text-3xl font-bold text-center mb-8">What Our Customers Say</h2>
+            <div className="grid gap-6 md:grid-cols-3">
+              {reviews.slice(0, 6).map((review) => (
+                <blockquote key={review.id} className="rounded-lg bg-white/10 p-6">
+                  <div className="flex gap-0.5 mb-3">
+                    {[1,2,3,4,5].map((s) => (
+                      <span key={s} className={s <= review.rating ? "text-amber-400" : "text-cream/30"}>★</span>
+                    ))}
+                  </div>
+                  <p className="text-lg">&quot;{review.comment}&quot;</p>
+                  <footer className="mt-4 text-sm text-cream/70">
+                    {review.user?.name ?? "Customer"}{review.product?.name ? ` · ${review.product.name}` : ""}
+                  </footer>
+                </blockquote>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
       <WhatsAppButton />
     </>
   );

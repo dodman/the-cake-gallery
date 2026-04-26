@@ -10,20 +10,71 @@ export const reviewSchema = z.object({
   comment: z.string().min(3)
 });
 
+// Public — only approved reviews
 export const listReviews = asyncHandler(async (req, res) => {
   const reviews = await prisma.review.findMany({
-    where: { productId: String(req.params.productId) },
+    where: { productId: String(req.params.productId), isApproved: true },
     include: { user: { select: { name: true } } },
     orderBy: { createdAt: "desc" }
   });
   res.json({ reviews });
 });
 
-export const createReview = asyncHandler(async (req, res) => {
-  const review = await prisma.review.create({ data: { ...req.body, userId: req.user!.id } });
+// Public — latest approved reviews (for home page)
+export const listApprovedReviews = asyncHandler(async (_req, res) => {
+  const reviews = await prisma.review.findMany({
+    where: { isApproved: true },
+    include: {
+      user: { select: { name: true } },
+      product: { select: { name: true } }
+    },
+    orderBy: { createdAt: "desc" },
+    take: 9
+  });
+  res.json({ reviews });
+});
 
+// Admin — all reviews pending approval
+export const listAllReviews = asyncHandler(async (_req, res) => {
+  const reviews = await prisma.review.findMany({
+    include: {
+      user: { select: { name: true, email: true } },
+      product: { select: { name: true } }
+    },
+    orderBy: { createdAt: "desc" }
+  });
+  res.json({ reviews });
+});
+
+// Admin — approve or reject a review
+export const setReviewApproval = asyncHandler(async (req, res) => {
+  const approved = z.boolean().parse(req.body.isApproved);
+  try {
+    const review = await prisma.review.update({
+      where: { id: String(req.params.id) },
+      data: { isApproved: approved }
+    });
+    res.json({ review });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2025") throw new ApiError(404, "Review not found");
+    throw e;
+  }
+});
+
+export const createReview = asyncHandler(async (req, res) => {
+  // Check for duplicate
+  const existing = await prisma.review.findUnique({
+    where: { userId_productId: { userId: req.user!.id, productId: req.body.productId } }
+  });
+  if (existing) throw new ApiError(409, "You have already reviewed this product");
+
+  const review = await prisma.review.create({
+    data: { ...req.body, userId: req.user!.id, isApproved: false }
+  });
+
+  // Update product rating stats (only from approved reviews)
   const stats = await prisma.review.aggregate({
-    where: { productId: review.productId },
+    where: { productId: review.productId, isApproved: true },
     _avg: { rating: true },
     _count: { id: true }
   });
