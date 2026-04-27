@@ -48,7 +48,7 @@ const products = [
 
   // ── Cakes ──
   {
-    name: "Cupcakes – Box of 6",
+    name: "Cupcakes (Box of 6)",
     slug: "cupcakes-box-6",
     description: "Six freshly baked cupcakes with buttercream swirls. Available in vanilla, chocolate and red velvet.",
     categoryId: catCakes.id,
@@ -59,7 +59,7 @@ const products = [
     tags: ["cupcakes", "vanilla", "chocolate", "red velvet"]
   },
   {
-    name: "Cupcakes – Box of 12",
+    name: "Cupcakes (Box of 12)",
     slug: "cupcakes-box-12",
     description: "A dozen cupcakes with buttercream swirls — perfect for parties and celebrations. Vanilla, chocolate or red velvet.",
     categoryId: catCakes.id,
@@ -71,7 +71,7 @@ const products = [
     tags: ["cupcakes", "party", "vanilla", "chocolate", "red velvet"]
   },
   {
-    name: "Cupcakes – Box of 24",
+    name: "Cupcakes (Box of 24)",
     slug: "cupcakes-box-24",
     description: "Two dozen cupcakes — ideal for events, weddings and large gatherings. Vanilla, chocolate or red velvet.",
     categoryId: catCakes.id,
@@ -116,7 +116,7 @@ const products = [
 
   // ── Pastries ──
   {
-    name: "Lemon Rocks – Box of 6",
+    name: "Lemon Rocks (Box of 6)",
     slug: "lemon-rocks-box-6",
     description: "Six zesty lemon rock cakes — soft and crumbly with a bright citrus flavour.",
     categoryId: catPastries.id,
@@ -128,7 +128,7 @@ const products = [
     tags: ["lemon", "pastry", "snack"]
   },
   {
-    name: "Lemon Rocks – Box of 12",
+    name: "Lemon Rocks (Box of 12)",
     slug: "lemon-rocks-box-12",
     description: "A dozen zesty lemon rock cakes, perfect for sharing.",
     categoryId: catPastries.id,
@@ -139,7 +139,7 @@ const products = [
     tags: ["lemon", "pastry", "party"]
   },
   {
-    name: "Lemon Rocks – Box of 24",
+    name: "Lemon Rocks (Box of 24)",
     slug: "lemon-rocks-box-24",
     description: "Two dozen lemon rock cakes — great for events and offices.",
     categoryId: catPastries.id,

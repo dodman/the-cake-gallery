@@ -71,7 +71,7 @@ export default function CheckoutPage() {
           {fulfillment === "delivery" && (
             <>
               <select className="focus-ring rounded-md border border-cocoa/15 p-3" value={deliveryArea} onChange={(event) => setDeliveryArea(event.target.value)}>
-                {areas.map((area) => <option key={area.area} value={area.area}>{area.area} - {money(area.fee)}</option>)}
+                {areas.map((area) => <option key={area.area} value={area.area}>{area.area} ({money(area.fee)})</option>)}
               </select>
               <textarea className="focus-ring rounded-md border border-cocoa/15 p-3" value={deliveryAddress} onChange={(event) => setDeliveryAddress(event.target.value)} placeholder="Delivery address and landmarks" />
             </>
