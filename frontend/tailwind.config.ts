@@ -8,7 +8,7 @@ const config: Config = {
         cocoa: "#3A2118",
         caramel: "#B86B2C",
         honey: "#E7A93D",
-        cream: "#FFF7EA",
+        cream: "#fdf0f5",
         berry: "#8C1D40",
         basil: "#2F6B4F"
       },
