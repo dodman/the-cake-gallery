@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { api } from "@/lib/api";
 import { fallbackProducts } from "@/lib/demoData";
 import { money } from "@/lib/format";
@@ -10,7 +9,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
   return (
     <section className="mx-auto grid max-w-7xl gap-10 px-4 py-12 lg:grid-cols-2 lg:items-center">
       <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-premium">
-        <Image src={product.image} alt={product.name} fill className="object-cover" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={product.image} alt={product.name} className="absolute inset-0 h-full w-full object-cover" />
       </div>
       <div>
         <p className="font-semibold text-berry">{product.category.name}</p>

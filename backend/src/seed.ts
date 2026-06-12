@@ -20,7 +20,11 @@ await prisma.product.deleteMany();
 await prisma.category.deleteMany();
 await prisma.user.deleteMany();
 
-const adminPassword = await bcrypt.hash("Admin@12345", 12);
+const adminPlain = process.env.ADMIN_PASSWORD;
+if (!adminPlain || adminPlain.length < 8) {
+  throw new Error("Set ADMIN_PASSWORD (min 8 characters) before seeding, e.g. ADMIN_PASSWORD='your-strong-pass' npm run seed");
+}
+const adminPassword = await bcrypt.hash(adminPlain, 12);
 const admin = await prisma.user.create({
   data: { name: "The Cake Gallery Admin", email: "waka.bk29@gmail.com", phone: "+260974063136", password: adminPassword, role: "admin", address: "Lusaka, Zambia" }
 });

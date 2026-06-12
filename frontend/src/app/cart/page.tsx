@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Button, LinkButton } from "@/components/Button";
@@ -24,7 +23,8 @@ export default function CartPage() {
             {items.map((item) => (
               <div key={item.id} className="grid grid-cols-[96px_1fr] gap-4 rounded-lg bg-white p-4">
                 <div className="relative aspect-square overflow-hidden rounded-md">
-                  <Image src={item.image} alt={item.name} fill className="object-cover" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={item.image} alt={item.name} className="absolute inset-0 h-full w-full object-cover" />
                 </div>
                 <div>
                   <div className="flex justify-between gap-3">

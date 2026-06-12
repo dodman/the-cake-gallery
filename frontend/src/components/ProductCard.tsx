@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Heart, Plus, Star } from "lucide-react";
 import type { Product } from "@/types";
@@ -14,7 +13,8 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="overflow-hidden rounded-lg border border-cocoa/10 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-premium">
       <Link href={`/products/${product.slug}`} className="relative block aspect-[4/3]">
-        <Image src={product.image} alt={product.name} fill className="object-cover" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={product.image} alt={product.name} className="absolute inset-0 h-full w-full object-cover" />
         {product.isTodaySpecial && <span className="absolute left-3 top-3 rounded-full bg-honey px-3 py-1 text-xs font-bold text-cocoa">Today</span>}
       </Link>
       <div className="p-4">

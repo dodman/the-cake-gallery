@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { money } from "@/lib/format";
 import { useAuth } from "@/store/auth";
+import { AdminMenu } from "@/components/AdminMenu";
 import type { ContactMessage, ContactReply, Order, Product, Review, User } from "@/types";
 
 type Stats = { dailySales: number; dailyOrders: number; totalOrders: number; totalUsers: number; topProducts: Product[] };
-type Tab = "orders" | "users" | "reviews" | "messages";
+type Tab = "menu" | "orders" | "users" | "reviews" | "messages";
 
 export default function AdminPage() {
   const { token, user } = useAuth();
@@ -103,6 +104,7 @@ export default function AdminPage() {
   const pendingReviews = reviews.filter((r) => !r.isApproved).length;
 
   const tabs: { id: Tab; label: string; badge?: number }[] = [
+    { id: "menu", label: "Menu" },
     { id: "orders", label: "Orders" },
     { id: "users", label: "Users" },
     { id: "reviews", label: "Reviews", badge: pendingReviews },
@@ -140,6 +142,9 @@ export default function AdminPage() {
           </button>
         ))}
       </div>
+
+      {/* Menu tab */}
+      {tab === "menu" && <AdminMenu token={token} />}
 
       {/* Orders tab */}
       {tab === "orders" && (

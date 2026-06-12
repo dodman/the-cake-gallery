@@ -72,5 +72,13 @@ export const api = {
   updateOrderStatus: (token: string, id: string, status: string) =>
     request<{ order: Order }>(`/orders/${id}/status`, { method: "PATCH", token, body: JSON.stringify({ status }) }),
   updateUserRole: (token: string, id: string, role: "customer" | "admin") =>
-    request<{ user: User }>(`/users/${id}/role`, { method: "PATCH", token, body: JSON.stringify({ role }) })
+    request<{ user: User }>(`/users/${id}/role`, { method: "PATCH", token, body: JSON.stringify({ role }) }),
+
+  // Admin — menu / products
+  adminCreateProduct: (token: string, body: unknown) =>
+    request<{ product: Product }>("/products", { method: "POST", token, body: JSON.stringify(body) }),
+  adminUpdateProduct: (token: string, id: string, body: unknown) =>
+    request<{ product: Product }>(`/products/${id}`, { method: "PUT", token, body: JSON.stringify(body) }),
+  adminDeleteProduct: (token: string, id: string) =>
+    request<void>(`/products/${id}`, { method: "DELETE", token })
 };
