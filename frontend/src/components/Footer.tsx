@@ -37,7 +37,7 @@ export function Footer() {
           <div className="mt-3 grid gap-2 text-sm text-cream/75">
             <span className="flex items-center gap-2"><Phone size={16} /> +260 97 4063136</span>
             <span className="flex items-center gap-2"><Mail size={16} /> waka.bk29@gmail.com</span>
-            <span className="flex items-center gap-2"><MapPin size={16} /> Lusaka, Zambia</span>
+            <a href="https://maps.app.goo.gl/GmsSHh29yDxhwCsJ8" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-honey"><MapPin size={16} /> Lewanika Mall, Lusaka</a>
           </div>
         </div>
         <div>

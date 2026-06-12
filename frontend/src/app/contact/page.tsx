@@ -5,7 +5,7 @@ import { Button } from "@/components/Button";
 import { api } from "@/lib/api";
 
 export default function ContactPage() {
-  const mapUrl = process.env.NEXT_PUBLIC_GOOGLE_MAPS_EMBED_URL ?? "https://www.google.com/maps?q=Lusaka%2C%20Zambia&output=embed";
+  const mapUrl = process.env.NEXT_PUBLIC_GOOGLE_MAPS_EMBED_URL ?? "https://www.google.com/maps?q=Lewanika%20Mall%2C%20Lusaka&output=embed";
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
