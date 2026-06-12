@@ -54,3 +54,40 @@ export const me = asyncHandler(async (req, res) => {
   const { password: _pw, ...safe } = user;
   res.json({ user: { ...safe, favorites: user.favorites.map((f) => f.product) } });
 });
+
+export const updateCredentialsSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Enter your current password"),
+    name: z.string().min(2).optional(),
+    email: z.string().email().optional(),
+    newPassword: z.string().min(8).optional()
+  })
+  .refine((data) => data.name || data.email || data.newPassword, {
+    message: "Provide a new name, email or password to update"
+  });
+
+export const updateCredentials = asyncHandler(async (req, res) => {
+  const user = await prisma.user.findUnique({ where: { id: req.user?.id } });
+  if (!user) throw new ApiError(404, "User not found");
+
+  const valid = await bcrypt.compare(req.body.currentPassword, user.password);
+  if (!valid) throw new ApiError(401, "Current password is incorrect");
+
+  const data: { name?: string; email?: string; password?: string } = {};
+
+  if (req.body.name) data.name = req.body.name.trim();
+
+  if (req.body.email) {
+    const email = req.body.email.toLowerCase().trim();
+    if (email !== user.email) {
+      const existing = await prisma.user.findUnique({ where: { email } });
+      if (existing) throw new ApiError(409, "That email is already in use");
+      data.email = email;
+    }
+  }
+
+  if (req.body.newPassword) data.password = await bcrypt.hash(req.body.newPassword, 12);
+
+  const updated = await prisma.user.update({ where: { id: user.id }, data });
+  res.json(authResponse(updated));
+});

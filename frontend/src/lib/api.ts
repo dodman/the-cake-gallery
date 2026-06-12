@@ -80,5 +80,9 @@ export const api = {
   adminUpdateProduct: (token: string, id: string, body: unknown) =>
     request<{ product: Product }>(`/products/${id}`, { method: "PUT", token, body: JSON.stringify(body) }),
   adminDeleteProduct: (token: string, id: string) =>
-    request<void>(`/products/${id}`, { method: "DELETE", token })
+    request<void>(`/products/${id}`, { method: "DELETE", token }),
+
+  // Account — change own login details (requires current password)
+  updateCredentials: (token: string, body: { currentPassword: string; name?: string; email?: string; newPassword?: string }) =>
+    request<{ token: string; user: User }>("/auth/me", { method: "PATCH", token, body: JSON.stringify(body) })
 };
