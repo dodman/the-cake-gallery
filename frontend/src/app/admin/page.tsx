@@ -5,10 +5,11 @@ import { api } from "@/lib/api";
 import { money } from "@/lib/format";
 import { useAuth } from "@/store/auth";
 import { AdminMenu } from "@/components/AdminMenu";
+import { AdminAccount } from "@/components/AdminAccount";
 import type { ContactMessage, ContactReply, Order, Product, Review, User } from "@/types";
 
 type Stats = { dailySales: number; dailyOrders: number; totalOrders: number; totalUsers: number; topProducts: Product[] };
-type Tab = "menu" | "orders" | "users" | "reviews" | "messages";
+type Tab = "menu" | "orders" | "users" | "reviews" | "messages" | "account";
 
 export default function AdminPage() {
   const { token, user } = useAuth();
@@ -108,7 +109,8 @@ export default function AdminPage() {
     { id: "orders", label: "Orders" },
     { id: "users", label: "Users" },
     { id: "reviews", label: "Reviews", badge: pendingReviews },
-    { id: "messages", label: "Messages", badge: unreadMsgs }
+    { id: "messages", label: "Messages", badge: unreadMsgs },
+    { id: "account", label: "Account" }
   ];
 
   return (
@@ -145,6 +147,9 @@ export default function AdminPage() {
 
       {/* Menu tab */}
       {tab === "menu" && <AdminMenu token={token} />}
+
+      {/* Account tab */}
+      {tab === "account" && <AdminAccount />}
 
       {/* Orders tab */}
       {tab === "orders" && (
