@@ -18,7 +18,7 @@ import { errorHandler, notFound } from "./utils/errors.js";
 export const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: env.corsOrigin, credentials: true }));
+app.use(cors({ origin: env.corsOrigins, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan(env.nodeEnv === "production" ? "combined" : "dev"));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300 }));
